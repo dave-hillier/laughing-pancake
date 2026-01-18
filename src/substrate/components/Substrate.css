@@ -1,0 +1,140 @@
+.substrate-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #1e1e1e;
+  color: #ddd;
+}
+
+.substrate-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px;
+  background: #252525;
+  border-bottom: 1px solid #333;
+  min-height: 48px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #7c5cff, #4a9eff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.app-subtitle {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  max-width: 300px;
+  margin: 0 20px;
+}
+
+.project-name {
+  width: 100%;
+  padding: 6px 12px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #ddd;
+  font-size: 13px;
+  text-align: center;
+}
+
+.project-name:focus {
+  outline: none;
+  border-color: #4a9eff;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.resolution-control {
+  width: 160px;
+  margin-right: 12px;
+}
+
+.header-btn {
+  padding: 6px 16px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #aaa;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.header-btn:hover {
+  background: #333;
+  border-color: #555;
+  color: #ddd;
+}
+
+.header-btn.primary {
+  background: linear-gradient(135deg, #7c5cff, #4a9eff);
+  border-color: transparent;
+  color: white;
+}
+
+.header-btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(124, 92, 255, 0.3);
+}
+
+.substrate-content {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.left-sidebar,
+.right-sidebar {
+  width: 240px;
+  min-width: 200px;
+  max-width: 320px;
+  background: #222;
+  border-right: 1px solid #333;
+  overflow: hidden;
+}
+
+.right-sidebar {
+  border-right: none;
+  border-left: 1px solid #333;
+}
+
+.main-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.graph-container {
+  flex: 1;
+  overflow: hidden;
+}
+
+.preview-container {
+  height: 300px;
+  flex-shrink: 0;
+}

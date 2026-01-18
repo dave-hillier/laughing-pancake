@@ -1,0 +1,184 @@
+.lsystem-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.editor-section {
+  background: #2a2a2a;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.editor-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-header h3 {
+  margin: 0;
+}
+
+.preset-select {
+  width: 100%;
+  padding: 8px 12px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #ddd;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.preset-select:focus {
+  outline: none;
+  border-color: #4a9eff;
+}
+
+.axiom-input {
+  width: 100%;
+  padding: 8px 12px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #ddd;
+  font-family: monospace;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.axiom-input:focus {
+  outline: none;
+  border-color: #4a9eff;
+}
+
+.add-rule-btn {
+  padding: 4px 12px;
+  background: #4a9eff;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-rule-btn:hover {
+  background: #3a8eef;
+}
+
+.rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rule-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  background: #1e1e1e;
+  border-radius: 4px;
+}
+
+.rule-predecessor {
+  width: 40px;
+  padding: 6px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 3px;
+  color: #ddd;
+  font-family: monospace;
+  text-align: center;
+}
+
+.rule-arrow {
+  color: #666;
+  font-size: 14px;
+}
+
+.rule-successor {
+  flex: 1;
+  padding: 6px 8px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 3px;
+  color: #ddd;
+  font-family: monospace;
+  font-size: 13px;
+}
+
+.rule-predecessor:focus,
+.rule-successor:focus {
+  outline: none;
+  border-color: #4a9eff;
+}
+
+.rule-probability {
+  width: 50px;
+  padding: 6px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 3px;
+  color: #ddd;
+  text-align: center;
+  font-size: 11px;
+}
+
+.remove-rule-btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #888;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.remove-rule-btn:hover {
+  background: #ff4444;
+  border-color: #ff4444;
+  color: white;
+}
+
+.generate-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #4a9eff, #7c5cff);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.generate-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+}
+
+.generate-btn:active {
+  transform: translateY(0);
+}

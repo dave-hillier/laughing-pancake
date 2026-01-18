@@ -1,0 +1,93 @@
+.colonization-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.editor-section {
+  background: #2a2a2a;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.editor-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.source-buttons,
+.thickness-buttons {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.source-btn,
+.thickness-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #888;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.source-btn:hover,
+.thickness-btn:hover {
+  border-color: #4a9eff;
+  color: #aaa;
+}
+
+.source-btn.active,
+.thickness-btn.active {
+  background: #4a9eff;
+  border-color: #4a9eff;
+  color: white;
+}
+
+.hint-text {
+  margin: 0 0 8px 0;
+  font-size: 11px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.seed-count {
+  padding: 8px;
+  background: #1e1e1e;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #aaa;
+  text-align: center;
+}
+
+.generate-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #4a9eff, #7c5cff);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.generate-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+}
+
+.generate-btn:active {
+  transform: translateY(0);
+}

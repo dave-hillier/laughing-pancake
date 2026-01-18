@@ -1,0 +1,163 @@
+.export-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.raster-canvas {
+  position: absolute;
+  visibility: hidden;
+  width: 1px;
+  height: 1px;
+}
+
+.panel-section {
+  background: #2a2a2a;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.panel-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.map-toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.map-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.map-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: #4a9eff;
+}
+
+.rasterize-btn {
+  width: 100%;
+  padding: 10px;
+  background: #4a9eff;
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.rasterize-btn:hover:not(:disabled) {
+  background: #3a8eef;
+}
+
+.rasterize-btn:disabled {
+  background: #444;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.preview-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.preview-tab {
+  flex: 1;
+  padding: 6px 8px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #888;
+  font-size: 10px;
+  text-transform: capitalize;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.preview-tab:hover {
+  border-color: #4a9eff;
+}
+
+.preview-tab.active {
+  background: #4a9eff;
+  border-color: #4a9eff;
+  color: white;
+}
+
+.preview-container {
+  aspect-ratio: 1;
+  background: #1e1e1e;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.preview-empty {
+  font-size: 11px;
+  color: #555;
+}
+
+.export-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.export-btn {
+  padding: 10px;
+  background: linear-gradient(135deg, #4a9eff, #7c5cff);
+  border: none;
+  border-radius: 4px;
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.export-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(74, 158, 255, 0.3);
+}
+
+.export-btn:disabled {
+  background: #444;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.export-btn.secondary {
+  background: #3a3a3a;
+}
+
+.export-btn.secondary:hover:not(:disabled) {
+  background: #4a4a4a;
+  box-shadow: none;
+}

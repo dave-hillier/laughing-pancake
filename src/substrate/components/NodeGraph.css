@@ -1,0 +1,134 @@
+.node-graph-container {
+  width: 100%;
+  height: 100%;
+  background: #1a1a1a;
+}
+
+.react-flow {
+  background: #1a1a1a;
+}
+
+.react-flow__node {
+  padding: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.substrate-node {
+  min-width: 150px;
+  background: #2a2a2a;
+  border: 2px solid #444;
+  border-radius: 8px;
+  font-size: 12px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.substrate-node.selected {
+  border-color: #4a9eff;
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.3);
+}
+
+.node-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #333;
+  border-radius: 6px 6px 0 0;
+  border-bottom: 1px solid #444;
+}
+
+.node-title {
+  font-weight: 600;
+  color: #ddd;
+}
+
+.node-category {
+  font-size: 10px;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.node-body {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  min-height: 40px;
+}
+
+.node-inputs,
+.node-outputs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.node-port {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  position: relative;
+}
+
+.node-port.input {
+  justify-content: flex-start;
+}
+
+.node-port.output {
+  justify-content: flex-end;
+}
+
+.port-label {
+  font-size: 11px;
+  color: #aaa;
+}
+
+.react-flow__handle {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #4a9eff;
+  border: 2px solid #2a2a2a;
+}
+
+.react-flow__handle-left {
+  left: -6px;
+}
+
+.react-flow__handle-right {
+  right: -6px;
+}
+
+.react-flow__edge-path {
+  stroke: #4a9eff;
+  stroke-width: 2;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #7c5cff;
+  stroke-width: 3;
+}
+
+.react-flow__controls {
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 6px;
+}
+
+.react-flow__controls-button {
+  background: #2a2a2a;
+  border-color: #444;
+  color: #888;
+  fill: #888;
+}
+
+.react-flow__controls-button:hover {
+  background: #333;
+}
+
+.react-flow__minimap {
+  background: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 6px;
+}

@@ -1,0 +1,143 @@
+.node-browser {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #222;
+}
+
+.browser-header {
+  padding: 12px;
+  border-bottom: 1px solid #333;
+}
+
+.browser-header h3 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.node-search {
+  width: 100%;
+  padding: 8px 12px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #ddd;
+  font-size: 12px;
+  box-sizing: border-box;
+}
+
+.node-search:focus {
+  outline: none;
+  border-color: #4a9eff;
+}
+
+.node-search::placeholder {
+  color: #666;
+}
+
+.browser-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.node-category {
+  margin-bottom: 4px;
+}
+
+.category-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #2a2a2a;
+  border: none;
+  border-radius: 4px;
+  color: #aaa;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.category-header:hover {
+  background: #333;
+}
+
+.category-header.expanded {
+  border-radius: 4px 4px 0 0;
+}
+
+.category-icon {
+  font-size: 8px;
+  color: #666;
+}
+
+.category-name {
+  flex: 1;
+  text-align: left;
+  font-weight: 500;
+}
+
+.category-count {
+  font-size: 10px;
+  color: #666;
+  padding: 2px 6px;
+  background: #1e1e1e;
+  border-radius: 10px;
+}
+
+.category-nodes {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 0 4px 20px;
+  background: #252525;
+  border-radius: 0 0 4px 4px;
+}
+
+.node-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  color: #888;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.node-item:hover {
+  background: #333;
+  color: #ddd;
+}
+
+.node-item:hover .node-add {
+  opacity: 1;
+}
+
+.node-name {
+  flex: 1;
+  text-align: left;
+}
+
+.node-add {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #4a9eff;
+  border-radius: 4px;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
