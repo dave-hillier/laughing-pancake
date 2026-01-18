@@ -338,6 +338,614 @@ void main() {
   },
 };
 
+// Simplex Noise Generator
+export const simplexNoise: NodeDefinition = {
+  id: 'simplex_noise',
+  name: 'Simplex Noise',
+  category: 'generator',
+  inputs: [],
+  outputs: [{ id: 'out', name: 'Output', type: 'grayscale' }],
+  parameters: [
+    { id: 'scale', name: 'Scale', type: 'float', default: 4, min: 0.1, max: 32 },
+    { id: 'octaves', name: 'Octaves', type: 'int', default: 4, min: 1, max: 8 },
+    { id: 'persistence', name: 'Persistence', type: 'float', default: 0.5, min: 0, max: 1 },
+    { id: 'lacunarity', name: 'Lacunarity', type: 'float', default: 2, min: 1, max: 4 },
+    { id: 'seed', name: 'Seed', type: 'float', default: 0, min: 0, max: 1000 },
+  ],
+  shader: {
+    fragment: `#version 300 es
+precision highp float;
+
+uniform vec2 u_resolution;
+uniform float u_scale;
+uniform int u_octaves;
+uniform float u_persistence;
+uniform float u_lacunarity;
+uniform float u_seed;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+vec3 permute(vec3 x) { return mod(((x*34.0)+1.0)*x, 289.0); }
+
+float snoise(vec2 v) {
+  const vec4 C = vec4(0.211324865405187, 0.366025403784439,
+                      -0.577350269189626, 0.024390243902439);
+  vec2 i = floor(v + dot(v, C.yy));
+  vec2 x0 = v - i + dot(i, C.xx);
+  vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+  vec4 x12 = x0.xyxy + C.xxzz;
+  x12.xy -= i1;
+  i = mod(i, 289.0);
+  vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+  vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+  m = m*m; m = m*m;
+  vec3 x = 2.0 * fract(p * C.www) - 1.0;
+  vec3 h = abs(x) - 0.5;
+  vec3 ox = floor(x + 0.5);
+  vec3 a0 = x - ox;
+  m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+  vec3 g;
+  g.x = a0.x * x0.x + h.x * x0.y;
+  g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+  return 130.0 * dot(m, g);
+}
+
+void main() {
+  vec2 p = v_uv * u_scale + u_seed;
+  float value = 0.0;
+  float amplitude = 1.0;
+  float frequency = 1.0;
+  float maxValue = 0.0;
+
+  for (int i = 0; i < 8; i++) {
+    if (i >= u_octaves) break;
+    value += amplitude * snoise(p * frequency);
+    maxValue += amplitude;
+    amplitude *= u_persistence;
+    frequency *= u_lacunarity;
+  }
+
+  value = value / maxValue * 0.5 + 0.5;
+  fragColor = vec4(vec3(value), 1.0);
+}`,
+    uniforms: [],
+  },
+};
+
+// Value Noise Generator
+export const valueNoise: NodeDefinition = {
+  id: 'value_noise',
+  name: 'Value Noise',
+  category: 'generator',
+  inputs: [],
+  outputs: [{ id: 'out', name: 'Output', type: 'grayscale' }],
+  parameters: [
+    { id: 'scale', name: 'Scale', type: 'float', default: 8, min: 0.1, max: 32 },
+    { id: 'seed', name: 'Seed', type: 'float', default: 0, min: 0, max: 1000 },
+  ],
+  shader: {
+    fragment: `#version 300 es
+precision highp float;
+
+uniform float u_scale;
+uniform float u_seed;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+float hash(vec2 p) {
+  return fract(sin(dot(p + u_seed, vec2(127.1, 311.7))) * 43758.5453);
+}
+
+float valueNoise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+
+  float a = hash(i);
+  float b = hash(i + vec2(1.0, 0.0));
+  float c = hash(i + vec2(0.0, 1.0));
+  float d = hash(i + vec2(1.0, 1.0));
+
+  return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+
+void main() {
+  float value = valueNoise(v_uv * u_scale);
+  fragColor = vec4(vec3(value), 1.0);
+}`,
+    uniforms: [],
+  },
+};
+
+// Fractal Brownian Motion
+export const fbm: NodeDefinition = {
+  id: 'fbm',
+  name: 'FBM',
+  category: 'generator',
+  inputs: [],
+  outputs: [{ id: 'out', name: 'Output', type: 'grayscale' }],
+  parameters: [
+    { id: 'scale', name: 'Scale', type: 'float', default: 4, min: 0.1, max: 32 },
+    { id: 'octaves', name: 'Octaves', type: 'int', default: 6, min: 1, max: 10 },
+    { id: 'gain', name: 'Gain', type: 'float', default: 0.5, min: 0, max: 1 },
+    { id: 'lacunarity', name: 'Lacunarity', type: 'float', default: 2, min: 1, max: 4 },
+    { id: 'seed', name: 'Seed', type: 'float', default: 0, min: 0, max: 1000 },
+  ],
+  shader: {
+    fragment: `#version 300 es
+precision highp float;
+
+uniform float u_scale;
+uniform int u_octaves;
+uniform float u_gain;
+uniform float u_lacunarity;
+uniform float u_seed;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+float hash(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1 + u_seed, 311.7))) * 43758.5453);
+}
+
+float noise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  float a = hash(i);
+  float b = hash(i + vec2(1.0, 0.0));
+  float c = hash(i + vec2(0.0, 1.0));
+  float d = hash(i + vec2(1.0, 1.0));
+  return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+
+float fbm(vec2 p) {
+  float value = 0.0;
+  float amplitude = 0.5;
+  float frequency = 1.0;
+
+  for (int i = 0; i < 10; i++) {
+    if (i >= u_octaves) break;
+    value += amplitude * noise(p * frequency);
+    frequency *= u_lacunarity;
+    amplitude *= u_gain;
+  }
+  return value;
+}
+
+void main() {
+  float value = fbm(v_uv * u_scale);
+  fragColor = vec4(vec3(value), 1.0);
+}`,
+    uniforms: [],
+  },
+};
+
+// Gabor Noise
+export const gaborNoise: NodeDefinition = {
+  id: 'gabor_noise',
+  name: 'Gabor Noise',
+  category: 'generator',
+  inputs: [],
+  outputs: [{ id: 'out', name: 'Output', type: 'grayscale' }],
+  parameters: [
+    { id: 'scale', name: 'Scale', type: 'float', default: 4, min: 0.5, max: 16 },
+    { id: 'angle', name: 'Angle', type: 'float', default: 0, min: 0, max: 360 },
+    { id: 'frequency', name: 'Frequency', type: 'float', default: 4, min: 1, max: 16 },
+    { id: 'bandwidth', name: 'Bandwidth', type: 'float', default: 1, min: 0.1, max: 4 },
+    { id: 'seed', name: 'Seed', type: 'float', default: 0, min: 0, max: 1000 },
+  ],
+  shader: {
+    fragment: `#version 300 es
+precision highp float;
+
+uniform float u_scale;
+uniform float u_angle;
+uniform float u_frequency;
+uniform float u_bandwidth;
+uniform float u_seed;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+float hash(vec2 p) {
+  return fract(sin(dot(p + u_seed, vec2(127.1, 311.7))) * 43758.5453);
+}
+
+float gabor(vec2 p, vec2 dir, float freq, float bw) {
+  float g = exp(-bw * dot(p, p));
+  float s = cos(6.28318 * freq * dot(p, dir));
+  return g * s;
+}
+
+void main() {
+  vec2 p = v_uv * u_scale;
+  float rad = u_angle * 3.14159265 / 180.0;
+  vec2 dir = vec2(cos(rad), sin(rad));
+
+  float value = 0.0;
+  vec2 cell = floor(p);
+
+  for (int dy = -1; dy <= 1; dy++) {
+    for (int dx = -1; dx <= 1; dx++) {
+      vec2 offset = vec2(float(dx), float(dy));
+      vec2 c = cell + offset;
+      vec2 pos = vec2(hash(c), hash(c + 100.0));
+      vec2 kernelPos = p - c - pos;
+      value += gabor(kernelPos, dir, u_frequency, u_bandwidth);
+    }
+  }
+
+  value = value * 0.5 + 0.5;
+  fragColor = vec4(vec3(clamp(value, 0.0, 1.0)), 1.0);
+}`,
+    uniforms: [],
+  },
+};
+
+// Hexagon Pattern
+export const hexagon: NodeDefinition = {
+  id: 'hexagon',
+  name: 'Hexagon',
+  category: 'generator',
+  inputs: [],
+  outputs: [{ id: 'out', name: 'Output', type: 'grayscale' }],
+  parameters: [
+    { id: 'scale', name: 'Scale', type: 'float', default: 8, min: 1, max: 32 },
+    { id: 'gap', name: 'Gap', type: 'float', default: 0.05, min: 0, max: 0.3 },
+    { id: 'mode', name: 'Mode', type: 'int', default: 0, min: 0, max: 2 },
+  ],
+  shader: {
+    fragment: `#version 300 es
+precision highp float;
+
+uniform float u_scale;
+uniform float u_gap;
+uniform int u_mode;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+const vec2 s = vec2(1.0, 1.732050808);
+
+float hexDist(vec2 p) {
+  p = abs(p);
+  return max(dot(p, s * 0.5), p.x);
+}
+
+vec4 hexCoords(vec2 uv) {
+  vec4 hC = floor(vec4(uv, uv - vec2(0.5, 1.0)) / s.xyxy) + 0.5;
+  vec4 h = vec4(uv - hC.xy * s, uv - (hC.zw + 0.5) * s);
+  return dot(h.xy, h.xy) < dot(h.zw, h.zw) ? vec4(h.xy, hC.xy) : vec4(h.zw, hC.zw + 0.5);
+}
+
+void main() {
+  vec2 uv = v_uv * u_scale;
+  vec4 hex = hexCoords(uv);
+
+  float d = hexDist(hex.xy);
+  float value;
+
+  if (u_mode == 0) {
+    // Solid hexagons
+    value = smoothstep(0.5, 0.5 - u_gap, d);
+  } else if (u_mode == 1) {
+    // Distance field
+    value = d;
+  } else {
+    // Cell ID based
+    value = fract(sin(dot(hex.zw, vec2(127.1, 311.7))) * 43758.5453);
+  }
+
+  fragColor = vec4(vec3(value), 1.0);
+}`,
+    uniforms: [],
+  },
+};
+
+// Weave Pattern
+export const weave: NodeDefinition = {
+  id: 'weave',
+  name: 'Weave',
+  category: 'generator',
+  inputs: [],
+  outputs: [{ id: 'out', name: 'Output', type: 'grayscale' }],
+  parameters: [
+    { id: 'scale', name: 'Scale', type: 'float', default: 8, min: 1, max: 32 },
+    { id: 'type', name: 'Type', type: 'int', default: 0, min: 0, max: 2 },
+    { id: 'gap', name: 'Gap', type: 'float', default: 0.1, min: 0, max: 0.5 },
+    { id: 'depth', name: 'Depth', type: 'float', default: 0.3, min: 0, max: 1 },
+  ],
+  shader: {
+    fragment: `#version 300 es
+precision highp float;
+
+uniform float u_scale;
+uniform int u_type;
+uniform float u_gap;
+uniform float u_depth;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+void main() {
+  vec2 p = v_uv * u_scale;
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+
+  float thread = 1.0 - u_gap;
+  float value;
+
+  if (u_type == 0) {
+    // Plain weave
+    bool over = mod(i.x + i.y, 2.0) < 1.0;
+    float hThread = step(f.y, thread) * step(1.0 - thread, f.y + 1.0);
+    float vThread = step(f.x, thread) * step(1.0 - thread, f.x + 1.0);
+    value = over ? (1.0 - u_depth * 0.5) : (1.0 - u_depth);
+    value *= max(smoothstep(0.0, u_gap, f.x) * smoothstep(1.0, 1.0 - u_gap, f.x),
+                 smoothstep(0.0, u_gap, f.y) * smoothstep(1.0, 1.0 - u_gap, f.y));
+  } else if (u_type == 1) {
+    // Twill weave (diagonal pattern)
+    bool over = mod(i.x + i.y * 2.0, 4.0) < 2.0;
+    value = over ? 1.0 : (1.0 - u_depth);
+    value *= smoothstep(0.0, u_gap, f.x) * smoothstep(1.0, 1.0 - u_gap, f.x);
+    value *= smoothstep(0.0, u_gap, f.y) * smoothstep(1.0, 1.0 - u_gap, f.y);
+  } else {
+    // Satin weave
+    bool over = mod(i.x + i.y * 3.0, 5.0) < 1.0;
+    value = over ? 1.0 : (1.0 - u_depth * 0.3);
+    value *= smoothstep(0.0, u_gap, f.x) * smoothstep(1.0, 1.0 - u_gap, f.x);
+    value *= smoothstep(0.0, u_gap, f.y) * smoothstep(1.0, 1.0 - u_gap, f.y);
+  }
+
+  fragColor = vec4(vec3(value), 1.0);
+}`,
+    uniforms: [],
+  },
+};
+
+// Tile Pattern (grid with variations)
+export const tilePattern: NodeDefinition = {
+  id: 'tile_pattern',
+  name: 'Tile Pattern',
+  category: 'generator',
+  inputs: [],
+  outputs: [{ id: 'out', name: 'Output', type: 'grayscale' }],
+  parameters: [
+    { id: 'tilesX', name: 'Tiles X', type: 'float', default: 4, min: 1, max: 16 },
+    { id: 'tilesY', name: 'Tiles Y', type: 'float', default: 4, min: 1, max: 16 },
+    { id: 'gap', name: 'Gap', type: 'float', default: 0.05, min: 0, max: 0.5 },
+    { id: 'roundness', name: 'Roundness', type: 'float', default: 0, min: 0, max: 0.5 },
+    { id: 'randomize', name: 'Randomize', type: 'float', default: 0, min: 0, max: 1 },
+  ],
+  shader: {
+    fragment: `#version 300 es
+precision highp float;
+
+uniform float u_tilesX;
+uniform float u_tilesY;
+uniform float u_gap;
+uniform float u_roundness;
+uniform float u_randomize;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+float hash(vec2 p) {
+  return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
+}
+
+float roundedBox(vec2 p, vec2 size, float radius) {
+  vec2 q = abs(p) - size + radius;
+  return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - radius;
+}
+
+void main() {
+  vec2 p = v_uv * vec2(u_tilesX, u_tilesY);
+  vec2 i = floor(p);
+  vec2 f = fract(p) - 0.5;
+
+  float rand = hash(i) * u_randomize;
+  vec2 size = vec2(0.5 - u_gap * 0.5) * (1.0 - rand * 0.5);
+  float radius = u_roundness * min(size.x, size.y);
+
+  float d = roundedBox(f, size, radius);
+  float value = 1.0 - smoothstep(-0.01, 0.01, d);
+
+  fragColor = vec4(vec3(value), 1.0);
+}`,
+    uniforms: [],
+  },
+};
+
+// Rectangle Shape
+export const rectangle: NodeDefinition = {
+  id: 'rectangle',
+  name: 'Rectangle',
+  category: 'generator',
+  inputs: [],
+  outputs: [{ id: 'out', name: 'Output', type: 'grayscale' }],
+  parameters: [
+    { id: 'width', name: 'Width', type: 'float', default: 0.5, min: 0, max: 1 },
+    { id: 'height', name: 'Height', type: 'float', default: 0.5, min: 0, max: 1 },
+    { id: 'cornerRadius', name: 'Corner Radius', type: 'float', default: 0, min: 0, max: 0.5 },
+    { id: 'softness', name: 'Softness', type: 'float', default: 0.01, min: 0, max: 0.2 },
+  ],
+  shader: {
+    fragment: `#version 300 es
+precision highp float;
+
+uniform float u_width;
+uniform float u_height;
+uniform float u_cornerRadius;
+uniform float u_softness;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+float roundedBox(vec2 p, vec2 size, float radius) {
+  vec2 q = abs(p) - size + radius;
+  return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - radius;
+}
+
+void main() {
+  vec2 p = v_uv - 0.5;
+  vec2 size = vec2(u_width, u_height) * 0.5;
+  float radius = u_cornerRadius * min(size.x, size.y);
+
+  float d = roundedBox(p, size, radius);
+  float value = 1.0 - smoothstep(-u_softness, u_softness, d);
+
+  fragColor = vec4(vec3(value), 1.0);
+}`,
+    uniforms: [],
+  },
+};
+
+// Ellipse Shape
+export const ellipse: NodeDefinition = {
+  id: 'ellipse',
+  name: 'Ellipse',
+  category: 'generator',
+  inputs: [],
+  outputs: [{ id: 'out', name: 'Output', type: 'grayscale' }],
+  parameters: [
+    { id: 'radiusX', name: 'Radius X', type: 'float', default: 0.4, min: 0, max: 0.5 },
+    { id: 'radiusY', name: 'Radius Y', type: 'float', default: 0.4, min: 0, max: 0.5 },
+    { id: 'softness', name: 'Softness', type: 'float', default: 0.01, min: 0, max: 0.2 },
+  ],
+  shader: {
+    fragment: `#version 300 es
+precision highp float;
+
+uniform float u_radiusX;
+uniform float u_radiusY;
+uniform float u_softness;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+void main() {
+  vec2 p = v_uv - 0.5;
+  vec2 r = vec2(u_radiusX, u_radiusY);
+
+  float d = length(p / r) - 1.0;
+  float value = 1.0 - smoothstep(-u_softness, u_softness, d * min(r.x, r.y));
+
+  fragColor = vec4(vec3(value), 1.0);
+}`,
+    uniforms: [],
+  },
+};
+
+// Polygon Shape
+export const polygon: NodeDefinition = {
+  id: 'polygon',
+  name: 'Polygon',
+  category: 'generator',
+  inputs: [],
+  outputs: [{ id: 'out', name: 'Output', type: 'grayscale' }],
+  parameters: [
+    { id: 'sides', name: 'Sides', type: 'int', default: 6, min: 3, max: 12 },
+    { id: 'radius', name: 'Radius', type: 'float', default: 0.4, min: 0, max: 0.5 },
+    { id: 'rotation', name: 'Rotation', type: 'float', default: 0, min: 0, max: 360 },
+    { id: 'softness', name: 'Softness', type: 'float', default: 0.01, min: 0, max: 0.2 },
+  ],
+  shader: {
+    fragment: `#version 300 es
+precision highp float;
+
+uniform int u_sides;
+uniform float u_radius;
+uniform float u_rotation;
+uniform float u_softness;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+const float PI = 3.14159265359;
+
+void main() {
+  vec2 p = v_uv - 0.5;
+
+  float rot = u_rotation * PI / 180.0;
+  float c = cos(rot);
+  float s = sin(rot);
+  p = vec2(p.x * c - p.y * s, p.x * s + p.y * c);
+
+  float a = atan(p.y, p.x);
+  float n = float(u_sides);
+  float r = length(p);
+
+  float angle = 2.0 * PI / n;
+  float d = r * cos(mod(a + PI / n, angle) - PI / n) / cos(PI / n);
+
+  float value = 1.0 - smoothstep(u_radius - u_softness, u_radius + u_softness, d);
+
+  fragColor = vec4(vec3(value), 1.0);
+}`,
+    uniforms: [],
+  },
+};
+
+// Star Shape
+export const star: NodeDefinition = {
+  id: 'star',
+  name: 'Star',
+  category: 'generator',
+  inputs: [],
+  outputs: [{ id: 'out', name: 'Output', type: 'grayscale' }],
+  parameters: [
+    { id: 'points', name: 'Points', type: 'int', default: 5, min: 3, max: 12 },
+    { id: 'outerRadius', name: 'Outer Radius', type: 'float', default: 0.4, min: 0, max: 0.5 },
+    { id: 'innerRadius', name: 'Inner Radius', type: 'float', default: 0.2, min: 0, max: 0.5 },
+    { id: 'rotation', name: 'Rotation', type: 'float', default: 0, min: 0, max: 360 },
+    { id: 'softness', name: 'Softness', type: 'float', default: 0.01, min: 0, max: 0.2 },
+  ],
+  shader: {
+    fragment: `#version 300 es
+precision highp float;
+
+uniform int u_points;
+uniform float u_outerRadius;
+uniform float u_innerRadius;
+uniform float u_rotation;
+uniform float u_softness;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+const float PI = 3.14159265359;
+
+void main() {
+  vec2 p = v_uv - 0.5;
+
+  float rot = u_rotation * PI / 180.0;
+  float c = cos(rot);
+  float s = sin(rot);
+  p = vec2(p.x * c - p.y * s, p.x * s + p.y * c);
+
+  float a = atan(p.y, p.x);
+  float n = float(u_points);
+  float r = length(p);
+
+  float angle = PI / n;
+  float sector = mod(a + PI * 0.5, 2.0 * angle) - angle;
+
+  float outerR = u_outerRadius;
+  float innerR = u_innerRadius;
+  float targetR = mix(innerR, outerR, (cos(sector * n) + 1.0) * 0.5);
+
+  float value = 1.0 - smoothstep(targetR - u_softness, targetR + u_softness, r);
+
+  fragColor = vec4(vec3(value), 1.0);
+}`,
+    uniforms: [],
+  },
+};
+
 export const generatorNodes: NodeDefinition[] = [
   perlinNoise,
   voronoiNoise,
@@ -345,4 +953,15 @@ export const generatorNodes: NodeDefinition[] = [
   solidColor,
   checker,
   brick,
+  simplexNoise,
+  valueNoise,
+  fbm,
+  gaborNoise,
+  hexagon,
+  weave,
+  tilePattern,
+  rectangle,
+  ellipse,
+  polygon,
+  star,
 ];

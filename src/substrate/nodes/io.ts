@@ -147,6 +147,83 @@ void main() {
   },
 };
 
+// Metallic Output
+export const metallicOutput: NodeDefinition = {
+  id: 'metallic_output',
+  name: 'Metallic Output',
+  category: 'output',
+  inputs: [{ id: 'input', name: 'Metallic', type: 'grayscale', required: true }],
+  outputs: [],
+  parameters: [],
+  shader: {
+    fragment: `#version 300 es
+precision highp float;
+
+uniform sampler2D u_input;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+void main() {
+  float m = texture(u_input, v_uv).r;
+  fragColor = vec4(vec3(m), 1.0);
+}`,
+    uniforms: [],
+  },
+};
+
+// Graph Input (for subgraphs)
+export const graphInput: NodeDefinition = {
+  id: 'graph_input',
+  name: 'Graph Input',
+  category: 'input',
+  inputs: [],
+  outputs: [{ id: 'out', name: 'Output', type: 'rgba' }],
+  parameters: [
+    { id: 'name', name: 'Name', type: 'enum', default: 'input', options: [{ value: 'input', label: 'Input' }] },
+    { id: 'type', name: 'Type', type: 'int', default: 0, min: 0, max: 3 },
+  ],
+  shader: {
+    fragment: `#version 300 es
+precision highp float;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+void main() {
+  // Placeholder - actual input is bound at runtime
+  fragColor = vec4(0.5, 0.5, 0.5, 1.0);
+}`,
+    uniforms: [],
+  },
+};
+
+// Graph Output (for subgraphs)
+export const graphOutput: NodeDefinition = {
+  id: 'graph_output',
+  name: 'Graph Output',
+  category: 'output',
+  inputs: [{ id: 'input', name: 'Input', type: 'rgba', required: true }],
+  outputs: [],
+  parameters: [
+    { id: 'name', name: 'Name', type: 'enum', default: 'output', options: [{ value: 'output', label: 'Output' }] },
+  ],
+  shader: {
+    fragment: `#version 300 es
+precision highp float;
+
+uniform sampler2D u_input;
+
+in vec2 v_uv;
+out vec4 fragColor;
+
+void main() {
+  fragColor = texture(u_input, v_uv);
+}`,
+    uniforms: [],
+  },
+};
+
 export const ioNodes: NodeDefinition[] = [
   imageInput,
   colorOutput,
@@ -154,4 +231,7 @@ export const ioNodes: NodeDefinition[] = [
   roughnessOutput,
   heightOutput,
   aoOutput,
+  metallicOutput,
+  graphInput,
+  graphOutput,
 ];

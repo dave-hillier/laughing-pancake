@@ -11,6 +11,7 @@ in vec2 a_position;
 in vec2 a_normal;
 in float a_thickness;
 in vec3 a_data; // x: distance from start, y: segment ID, z: order
+in float a_depth; // normalized depth from root (0-1)
 
 uniform vec2 u_resolution;
 uniform mat3 u_transform;
@@ -18,6 +19,7 @@ uniform mat3 u_transform;
 out float v_thickness;
 out vec3 v_data;
 out vec2 v_position;
+out float v_depth;
 
 void main() {
   vec3 transformed = u_transform * vec3(a_position, 1.0);
@@ -25,6 +27,7 @@ void main() {
   v_position = pos;
   v_thickness = a_thickness;
   v_data = a_data;
+  v_depth = a_depth;
 
   vec2 clipPos = (pos / u_resolution) * 2.0 - 1.0;
   gl_Position = vec4(clipPos.x, -clipPos.y, 0.0, 1.0);
@@ -37,10 +40,12 @@ precision highp float;
 in float v_thickness;
 in vec3 v_data;
 in vec2 v_position;
+in float v_depth;
 
 layout(location = 0) out vec4 o_seed;
 layout(location = 1) out vec4 o_thickness;
 layout(location = 2) out vec4 o_id;
+layout(location = 3) out vec4 o_depth;
 
 void main() {
   // Seed for JFA: store position
@@ -57,6 +62,9 @@ void main() {
     floor(id / 65536.0) / 255.0,
     1.0
   );
+
+  // Depth map: normalized depth from root (0 = root, 1 = leaves)
+  o_depth = vec4(vec3(v_depth), 1.0);
 }
 `;
 
@@ -189,21 +197,28 @@ export class Rasterizer {
     gl.bindVertexArray(this.lineVAO);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.lineVBO);
 
+    // Stride: 9 floats * 4 bytes = 36 bytes
+    const stride = 36;
+
     // Position: 2 floats
     gl.enableVertexAttribArray(0);
-    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 32, 0);
+    gl.vertexAttribPointer(0, 2, gl.FLOAT, false, stride, 0);
 
     // Normal: 2 floats
     gl.enableVertexAttribArray(1);
-    gl.vertexAttribPointer(1, 2, gl.FLOAT, false, 32, 8);
+    gl.vertexAttribPointer(1, 2, gl.FLOAT, false, stride, 8);
 
     // Thickness: 1 float
     gl.enableVertexAttribArray(2);
-    gl.vertexAttribPointer(2, 1, gl.FLOAT, false, 32, 16);
+    gl.vertexAttribPointer(2, 1, gl.FLOAT, false, stride, 16);
 
     // Data (distance, id, order): 3 floats
     gl.enableVertexAttribArray(3);
-    gl.vertexAttribPointer(3, 3, gl.FLOAT, false, 32, 20);
+    gl.vertexAttribPointer(3, 3, gl.FLOAT, false, stride, 20);
+
+    // Depth: 1 float
+    gl.enableVertexAttribArray(4);
+    gl.vertexAttribPointer(4, 1, gl.FLOAT, false, stride, 32);
 
     gl.bindVertexArray(null);
   }
@@ -246,14 +261,21 @@ export class Rasterizer {
       format: 'RGBA8',
     });
 
+    const depthFB = this.renderer.createFramebuffer({
+      width: resolution,
+      height: resolution,
+      format: 'RGBA8',
+    });
+
     // Render lines to multiple targets
     this.renderLines(
-      lineData.length / 8, // 8 floats per vertex
+      lineData.length / 9, // 9 floats per vertex
       transform,
       resolution,
       seedFB,
       thicknessFB,
-      idFB
+      idFB,
+      depthFB
     );
 
     // Run Jump Flood Algorithm
@@ -278,10 +300,15 @@ export class Rasterizer {
       output.id = this.framebufferToCanvas(idFB);
     }
 
+    if (maps.includes('depth')) {
+      output.depth = this.framebufferToCanvas(depthFB);
+    }
+
     // Cleanup
     seedFB.dispose();
     thicknessFB.dispose();
     idFB.dispose();
+    depthFB.dispose();
     jfaResult.dispose();
 
     return output;
@@ -311,6 +338,13 @@ export class Rasterizer {
     const vertices: number[] = [];
     let segmentId = 0;
 
+    // Find max depth for normalization
+    let maxDepth = 0;
+    graph.nodes.forEach(node => {
+      maxDepth = Math.max(maxDepth, node.depth);
+    });
+    if (maxDepth === 0) maxDepth = 1; // Prevent division by zero
+
     graph.segments.forEach(segment => {
       const startNode = graph.nodes.get(segment.start);
       const endNode = graph.nodes.get(segment.end);
@@ -324,6 +358,10 @@ export class Rasterizer {
       const order0 = startNode.order / 10;
       const order1 = endNode.order / 10;
 
+      // Normalized depth (0 = root, 1 = deepest)
+      const depth0 = startNode.depth / maxDepth;
+      const depth1 = endNode.depth / maxDepth;
+
       // Calculate perpendicular normal
       const dx = p1.x - p0.x;
       const dy = p1.y - p0.y;
@@ -334,17 +372,17 @@ export class Rasterizer {
       const ny = dx / len;
 
       // Create quad (2 triangles, 6 vertices)
-      // Vertex format: position(2), normal(2), thickness(1), data(3)
+      // Vertex format: position(2), normal(2), thickness(1), data(3), depth(1)
 
       // Triangle 1
-      vertices.push(p0.x, p0.y, nx, ny, thickness0, 0, segmentId, order0);
-      vertices.push(p0.x, p0.y, -nx, -ny, thickness0, 0, segmentId, order0);
-      vertices.push(p1.x, p1.y, nx, ny, thickness1, len, segmentId, order1);
+      vertices.push(p0.x, p0.y, nx, ny, thickness0, 0, segmentId, order0, depth0);
+      vertices.push(p0.x, p0.y, -nx, -ny, thickness0, 0, segmentId, order0, depth0);
+      vertices.push(p1.x, p1.y, nx, ny, thickness1, len, segmentId, order1, depth1);
 
       // Triangle 2
-      vertices.push(p0.x, p0.y, -nx, -ny, thickness0, 0, segmentId, order0);
-      vertices.push(p1.x, p1.y, -nx, -ny, thickness1, len, segmentId, order1);
-      vertices.push(p1.x, p1.y, nx, ny, thickness1, len, segmentId, order1);
+      vertices.push(p0.x, p0.y, -nx, -ny, thickness0, 0, segmentId, order0, depth0);
+      vertices.push(p1.x, p1.y, -nx, -ny, thickness1, len, segmentId, order1, depth1);
+      vertices.push(p1.x, p1.y, nx, ny, thickness1, len, segmentId, order1, depth1);
 
       segmentId++;
     });
@@ -358,7 +396,8 @@ export class Rasterizer {
     resolution: number,
     seedFB: Framebuffer,
     thicknessFB: Framebuffer,
-    idFB: Framebuffer
+    idFB: Framebuffer,
+    depthFB: Framebuffer
   ): void {
     const gl = this.renderer.getContext();
 
@@ -388,11 +427,19 @@ export class Rasterizer {
       idFB.getTexture(),
       0
     );
+    gl.framebufferTexture2D(
+      gl.FRAMEBUFFER,
+      gl.COLOR_ATTACHMENT3,
+      gl.TEXTURE_2D,
+      depthFB.getTexture(),
+      0
+    );
 
     gl.drawBuffers([
       gl.COLOR_ATTACHMENT0,
       gl.COLOR_ATTACHMENT1,
       gl.COLOR_ATTACHMENT2,
+      gl.COLOR_ATTACHMENT3,
     ]);
 
     gl.viewport(0, 0, resolution, resolution);

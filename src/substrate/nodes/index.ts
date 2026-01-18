@@ -5,12 +5,16 @@ import { generatorNodes } from './generators';
 import { filterNodes } from './filters';
 import { blendNodes } from './blends';
 import { ioNodes } from './io';
+import { utilityNodes } from './utilities';
+import { scatterNodes } from './scatter';
 
 export const allNodes: NodeDefinition[] = [
   ...generatorNodes,
   ...filterNodes,
   ...blendNodes,
   ...ioNodes,
+  ...utilityNodes,
+  ...scatterNodes,
 ];
 
 export function getNodesByCategory(): Record<string, NodeDefinition[]> {
@@ -34,3 +38,5 @@ export { generatorNodes } from './generators';
 export { filterNodes } from './filters';
 export { blendNodes } from './blends';
 export { ioNodes } from './io';
+export { utilityNodes } from './utilities';
+export { scatterNodes } from './scatter';
