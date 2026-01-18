@@ -1,0 +1,36 @@
+.canvas-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #1a1a1a;
+  overflow: hidden;
+}
+
+.growth-canvas {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.growth-canvas:active {
+  cursor: grabbing;
+}
+
+.canvas-info {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  gap: 16px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 6px;
+  font-size: 11px;
+  color: #888;
+}
+
+.canvas-info span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
