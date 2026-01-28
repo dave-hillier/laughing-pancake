@@ -1,14 +1,20 @@
 // Main Dendrite Application Component
 
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDendriteStore } from '../store/dendriteStore';
 import { LSystemEditor } from './LSystemEditor';
 import { ColonizationEditor } from './ColonizationEditor';
 import { Canvas } from './Canvas';
 import { ExportPanel } from './ExportPanel';
+import { ToggleButtonGroup } from '../../shared/components';
 import './Dendrite.css';
 
-export const Dendrite: React.FC = () => {
+const ALGORITHM_OPTIONS = [
+  { value: 'lsystem' as const, label: 'L-System' },
+  { value: 'colonization' as const, label: 'Space Colonization' },
+];
+
+export const Dendrite = () => {
   const { algorithmType, setAlgorithmType, generate, viewport, setViewportMode } =
     useDendriteStore();
 
@@ -23,18 +29,12 @@ export const Dendrite: React.FC = () => {
         <h1 className="app-title">Dendrite</h1>
         <p className="app-subtitle">Growth Simulator</p>
         <div className="algorithm-toggle">
-          <button
-            className={`toggle-btn ${algorithmType === 'lsystem' ? 'active' : ''}`}
-            onClick={() => setAlgorithmType('lsystem')}
-          >
-            L-System
-          </button>
-          <button
-            className={`toggle-btn ${algorithmType === 'colonization' ? 'active' : ''}`}
-            onClick={() => setAlgorithmType('colonization')}
-          >
-            Space Colonization
-          </button>
+          <ToggleButtonGroup
+            options={ALGORITHM_OPTIONS}
+            value={algorithmType}
+            onChange={setAlgorithmType}
+            fullWidth={false}
+          />
         </div>
       </header>
 

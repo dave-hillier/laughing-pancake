@@ -1,6 +1,6 @@
 // Node Browser Component - Add nodes to the graph
 
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useSubstrateStore } from '../store/substrateStore';
 import { getNodesByCategory } from '../nodes';
 import './NodeBrowser.css';
@@ -16,7 +16,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const CATEGORY_ORDER = ['generator', 'filter', 'blend', 'input', 'output', 'utility'];
 
-export const NodeBrowser: React.FC = () => {
+export const NodeBrowser = () => {
   const { addNode, viewportPan, viewportZoom } = useSubstrateStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(

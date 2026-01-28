@@ -1,15 +1,19 @@
 // Preview Panel Component - 2D and 3D preview
 
-import React, { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import { useSubstrateStore } from '../store/substrateStore';
 import { ShaderPipeline } from '../engine/ShaderPipeline';
+import { ToggleButtonGroup } from '../../shared/components';
 import './PreviewPanel.css';
 
+const PREVIEW_MODES = ['2d', '3d'] as const;
+const TILE_COUNTS = [1, 2, 3] as const;
+
 // 3D Preview Mesh
-const PreviewMesh: React.FC<{ texture: THREE.Texture | null }> = ({ texture }) => {
+const PreviewMesh = ({ texture }: { texture: THREE.Texture | null }) => {
   const meshRef = useRef<THREE.Mesh>(null);
 
   return (
@@ -24,12 +28,12 @@ const PreviewMesh: React.FC<{ texture: THREE.Texture | null }> = ({ texture }) =
   );
 };
 
-export const PreviewPanel: React.FC = () => {
+export const PreviewPanel = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pipelineRef = useRef<ShaderPipeline | null>(null);
   const [previewMode, setPreviewMode] = useState<'2d' | '3d'>('2d');
   const [previewImage, setPreviewImage] = useState<string | null>(null);
-  const [tileCount, setTileCount] = useState(2);
+  const [tileCount, setTileCount] = useState<1 | 2 | 3>(2);
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
 
   const {
@@ -88,32 +92,21 @@ export const PreviewPanel: React.FC = () => {
       <canvas ref={canvasRef} className="render-canvas" />
 
       <div className="preview-header">
-        <div className="preview-tabs">
-          <button
-            className={`preview-tab ${previewMode === '2d' ? 'active' : ''}`}
-            onClick={() => setPreviewMode('2d')}
-          >
-            2D
-          </button>
-          <button
-            className={`preview-tab ${previewMode === '3d' ? 'active' : ''}`}
-            onClick={() => setPreviewMode('3d')}
-          >
-            3D
-          </button>
-        </div>
+        <ToggleButtonGroup
+          options={PREVIEW_MODES.map(m => ({ value: m, label: m.toUpperCase() }))}
+          value={previewMode}
+          onChange={setPreviewMode}
+          fullWidth={false}
+        />
         {previewMode === '2d' && (
           <div className="tile-controls">
             <span>Tiles:</span>
-            {[1, 2, 3].map(n => (
-              <button
-                key={n}
-                className={`tile-btn ${tileCount === n ? 'active' : ''}`}
-                onClick={() => setTileCount(n)}
-              >
-                {n}x{n}
-              </button>
-            ))}
+            <ToggleButtonGroup
+              options={TILE_COUNTS.map(n => ({ value: String(n), label: `${n}x${n}` }))}
+              value={String(tileCount)}
+              onChange={v => setTileCount(Number(v) as 1 | 2 | 3)}
+              fullWidth={false}
+            />
           </div>
         )}
       </div>

@@ -1,12 +1,11 @@
 // Properties Panel Component - Edit node parameters
 
-import React from 'react';
 import { useSubstrateStore } from '../store/substrateStore';
 import { Slider, ColorPicker } from '../../shared/components';
 import type { Color } from '../../shared/types';
 import './PropertiesPanel.css';
 
-export const PropertiesPanel: React.FC = () => {
+export const PropertiesPanel = () => {
   const {
     nodes,
     selectedNodeId,

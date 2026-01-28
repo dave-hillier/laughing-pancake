@@ -1,3 +1,5 @@
+@import '../../shared/components/editor.css';
+
 .dendrite-app {
   display: flex;
   flex-direction: column;
@@ -40,24 +42,22 @@
   border-radius: 6px;
 }
 
-.toggle-btn {
+/* Custom styling for header toggle buttons */
+.algorithm-toggle .toggle-btn {
   padding: 8px 16px;
   background: transparent;
   border: none;
-  border-radius: 4px;
-  color: #888;
   font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s;
 }
 
-.toggle-btn:hover {
+.algorithm-toggle .toggle-btn:hover {
+  background: transparent;
   color: #aaa;
 }
 
-.toggle-btn.active {
+.algorithm-toggle .toggle-btn.active {
   background: #4a9eff;
-  color: white;
+  border: none;
 }
 
 .dendrite-content {
