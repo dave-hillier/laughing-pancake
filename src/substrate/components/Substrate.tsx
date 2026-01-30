@@ -1,6 +1,5 @@
 // Main Substrate Application Component
 
-import React from 'react';
 import { NodeGraph } from './NodeGraph';
 import { NodeBrowser } from './NodeBrowser';
 import { PropertiesPanel } from './PropertiesPanel';
@@ -10,7 +9,7 @@ import { Slider } from '../../shared/components';
 import { downloadBlob } from '../../shared/utils';
 import './Substrate.css';
 
-export const Substrate: React.FC = () => {
+export const Substrate = () => {
   const {
     projectName,
     setProjectName,

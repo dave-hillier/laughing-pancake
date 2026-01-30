@@ -1,12 +1,12 @@
 // L-System Grammar Editor Component
 
-import React from 'react';
 import { useDendriteStore } from '../store/dendriteStore';
-import { Slider } from '../../shared/components';
+import { Slider, EditorSection } from '../../shared/components';
+import { capitalize } from '../../shared/utils';
 import { L_SYSTEM_PRESETS } from '../engine';
 import './LSystemEditor.css';
 
-export const LSystemEditor: React.FC = () => {
+export const LSystemEditor = () => {
   const {
     lsystem,
     setAxiom,
@@ -20,10 +20,9 @@ export const LSystemEditor: React.FC = () => {
 
   return (
     <div className="lsystem-editor">
-      <div className="editor-section">
-        <h3>Preset</h3>
+      <EditorSection title="Preset">
         <select
-          className="preset-select"
+          className="editor-select"
           onChange={e => {
             loadLSystemPreset(e.target.value);
             generate();
@@ -32,30 +31,30 @@ export const LSystemEditor: React.FC = () => {
           <option value="">Select preset...</option>
           {Object.keys(L_SYSTEM_PRESETS).map(name => (
             <option key={name} value={name}>
-              {name.charAt(0).toUpperCase() + name.slice(1)}
+              {capitalize(name)}
             </option>
           ))}
         </select>
-      </div>
+      </EditorSection>
 
-      <div className="editor-section">
-        <h3>Axiom</h3>
+      <EditorSection title="Axiom">
         <input
           type="text"
-          className="axiom-input"
+          className="editor-input monospace"
           value={lsystem.axiom}
           onChange={e => setAxiom(e.target.value)}
           placeholder="Starting symbol(s)"
         />
-      </div>
+      </EditorSection>
 
-      <div className="editor-section">
-        <div className="section-header">
-          <h3>Production Rules</h3>
+      <EditorSection
+        title="Production Rules"
+        action={
           <button className="add-rule-btn" onClick={addRule}>
             + Add Rule
           </button>
-        </div>
+        }
+      >
         <div className="rules-list">
           {lsystem.rules.map((rule, index) => (
             <div key={index} className="rule-item">
@@ -100,10 +99,9 @@ export const LSystemEditor: React.FC = () => {
             </div>
           ))}
         </div>
-      </div>
+      </EditorSection>
 
-      <div className="editor-section">
-        <h3>Parameters</h3>
+      <EditorSection title="Parameters">
         <Slider
           label="Iterations"
           value={lsystem.parameters.iterations}
@@ -162,7 +160,7 @@ export const LSystemEditor: React.FC = () => {
           onChange={v => setLSystemParam('angleVariance', v)}
           unit="°"
         />
-      </div>
+      </EditorSection>
 
       <button className="generate-btn" onClick={generate}>
         Generate

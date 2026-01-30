@@ -1,11 +1,13 @@
 // Space Colonization Editor Component
 
-import React from 'react';
 import { useDendriteStore } from '../store/dendriteStore';
-import { Slider } from '../../shared/components';
+import { Slider, ToggleButtonGroup, EditorSection } from '../../shared/components';
 import './ColonizationEditor.css';
 
-export const ColonizationEditor: React.FC = () => {
+const ATTRACTOR_SOURCES = ['uniform', 'boundary', 'poisson'] as const;
+const THICKNESS_MODES = ['constant', 'depth', 'flow'] as const;
+
+export const ColonizationEditor = () => {
   const {
     colonization,
     setColonizationParam,
@@ -17,19 +19,12 @@ export const ColonizationEditor: React.FC = () => {
 
   return (
     <div className="colonization-editor">
-      <div className="editor-section">
-        <h3>Attractor Distribution</h3>
-        <div className="source-buttons">
-          {(['uniform', 'boundary', 'poisson'] as const).map(source => (
-            <button
-              key={source}
-              className={`source-btn ${colonization.attractors.source === source ? 'active' : ''}`}
-              onClick={() => setAttractorSource(source)}
-            >
-              {source.charAt(0).toUpperCase() + source.slice(1)}
-            </button>
-          ))}
-        </div>
+      <EditorSection title="Attractor Distribution">
+        <ToggleButtonGroup
+          options={ATTRACTOR_SOURCES}
+          value={colonization.attractors.source}
+          onChange={setAttractorSource}
+        />
         <Slider
           label="Attractor Count"
           value={colonization.attractors.count}
@@ -38,10 +33,9 @@ export const ColonizationEditor: React.FC = () => {
           step={50}
           onChange={setAttractorCount}
         />
-      </div>
+      </EditorSection>
 
-      <div className="editor-section">
-        <h3>Growth Parameters</h3>
+      <EditorSection title="Growth Parameters">
         <Slider
           label="Attraction Distance"
           value={colonization.parameters.attractionDistance}
@@ -74,32 +68,24 @@ export const ColonizationEditor: React.FC = () => {
           step={50}
           onChange={v => setColonizationParam('maxIterations', v)}
         />
-      </div>
+      </EditorSection>
 
-      <div className="editor-section">
-        <h3>Thickness Mode</h3>
-        <div className="thickness-buttons">
-          {(['constant', 'depth', 'flow'] as const).map(mode => (
-            <button
-              key={mode}
-              className={`thickness-btn ${colonization.thicknessMode === mode ? 'active' : ''}`}
-              onClick={() => setThicknessMode(mode)}
-            >
-              {mode.charAt(0).toUpperCase() + mode.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
+      <EditorSection title="Thickness Mode">
+        <ToggleButtonGroup
+          options={THICKNESS_MODES}
+          value={colonization.thicknessMode}
+          onChange={setThicknessMode}
+        />
+      </EditorSection>
 
-      <div className="editor-section">
-        <h3>Seed Points</h3>
+      <EditorSection title="Seed Points">
         <p className="hint-text">
           Click on the canvas to place seed points where growth begins.
         </p>
         <div className="seed-count">
           {colonization.seeds.length} seed{colonization.seeds.length !== 1 ? 's' : ''} placed
         </div>
-      </div>
+      </EditorSection>
 
       <button className="generate-btn" onClick={generate}>
         Generate

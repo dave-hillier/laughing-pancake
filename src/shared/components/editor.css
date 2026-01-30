@@ -1,0 +1,128 @@
+/* Shared Editor Styles */
+
+.editor-section {
+  background: #2a2a2a;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.editor-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-header h3 {
+  margin: 0;
+}
+
+/* Primary action button with gradient */
+.generate-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #4a9eff, #7c5cff);
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.generate-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(74, 158, 255, 0.3);
+}
+
+.generate-btn:active {
+  transform: translateY(0);
+}
+
+/* Toggle button group styles */
+.toggle-button-group {
+  display: flex;
+  gap: 4px;
+}
+
+.toggle-button-group.full-width .toggle-btn {
+  flex: 1;
+}
+
+.toggle-btn {
+  padding: 8px 12px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #888;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.toggle-btn:hover {
+  border-color: #4a9eff;
+  color: #aaa;
+}
+
+.toggle-btn.active {
+  background: #4a9eff;
+  border-color: #4a9eff;
+  color: white;
+}
+
+/* Common input styles */
+.editor-input {
+  width: 100%;
+  padding: 8px 12px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #ddd;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.editor-input:focus {
+  outline: none;
+  border-color: #4a9eff;
+}
+
+.editor-input.monospace {
+  font-family: monospace;
+  font-size: 14px;
+}
+
+/* Select styles */
+.editor-select {
+  width: 100%;
+  padding: 8px 12px;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  border-radius: 4px;
+  color: #ddd;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.editor-select:focus {
+  outline: none;
+  border-color: #4a9eff;
+}
+
+/* Hint text */
+.hint-text {
+  margin: 0 0 8px 0;
+  font-size: 11px;
+  color: #666;
+  line-height: 1.4;
+}

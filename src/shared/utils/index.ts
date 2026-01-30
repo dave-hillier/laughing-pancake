@@ -112,3 +112,7 @@ export function canvasToBlob(canvas: HTMLCanvasElement, type = 'image/png'): Pro
     }, type);
   });
 }
+
+export function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
